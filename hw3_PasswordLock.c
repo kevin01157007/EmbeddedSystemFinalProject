@@ -32,22 +32,25 @@ void DelayMs(unsigned char t);
 
 void main(void) {
     unsigned char i;
+	bit clear = 0;
     Init_Timer0();
     InitUART();
     SendStr("8051 密碼鎖啟動...\r\n");
 
     while (1) {
-        // 處理收到完整資料後的邏輯
+        // 判斷是否收到完整指令
         if (uart_index == 5) {
-			uart_buf[uart_index] = '\0';
-			uart_index = 0;
-            // 輸入為 ENTER
+            uart_buf[uart_index] = '\0';
+            uart_index = 0;
+
             if (strcmp(uart_buf, "ENTER") == 0) {
                 bit correct = 1;
                 for (i = 0; i < 4; i++)
                     correct = correct && (input_buffer[i] == password[i]);
+
                 for (i = 0; i < 8; i++)
                     TempData[i] = 0;
+
                 if (correct) {
                     TempData[0] = 0x3f; // o
                     TempData[1] = 0x73; // p
@@ -60,17 +63,29 @@ void main(void) {
                     TempData[2] = 0x50; // r
                     SendStr("wrong");
                 }
+
+				clear = 1;
                 input_index = 0;
             }
-            // 輸入為 SET
+
             else if (strcmp(uart_buf, "SET\r\r") == 0) {
                 set_mode = 1;
                 input_index = 0;
+                for (i = 0; i < 8; i++)
+                    TempData[i] = 0; // 進入設定模式先清除顯示
                 SendStr("password_setup");
             }
-            // 輸入為數字
+
             else if (uart_buf[1] == '\r') {
+
                 unsigned char num = uart_buf[0] - '0';
+
+                // 輸入第一個數字時先清除顯示
+                if (input_index == 0 && clear == 1) {
+                    for (i = 0; i < 8; i++)
+                        TempData[i] = 0;
+                }
+
                 if (set_mode) {
                     password[input_index] = num;
                     TempData[7 - input_index] = dofly_DuanMa[num];
@@ -78,6 +93,9 @@ void main(void) {
                     if (input_index == 4) {
                         set_mode = 0;
                         input_index = 0;
+                        DelayMs(500); // 停留一點時間再清
+                        for (i = 0; i < 8; i++)
+                            TempData[i] = 0;
                         SendStr("setup_finish");
                     }
                 } else {
@@ -88,8 +106,6 @@ void main(void) {
                         input_index = 0;
                 }
             }
-            // 清除緩衝
-            //uart_index = 0;
         }
     }
 }
