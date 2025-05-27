@@ -88,7 +88,7 @@ void main(void) {
 
                 if (set_mode) {
                     password[input_index] = num;
-                    TempData[7 - input_index] = dofly_DuanMa[num];
+                    TempData[4 + input_index] = dofly_DuanMa[num];
                     input_index++;
                     if (input_index == 4) {
                         set_mode = 0;
@@ -100,7 +100,7 @@ void main(void) {
                     }
                 } else {
                     input_buffer[input_index] = num;
-                    TempData[7 - input_index] = dofly_DuanMa[num];
+                    TempData[4 + input_index] = dofly_DuanMa[num];
                     input_index++;
                     if (input_index >= 4)
                         input_index = 0;
