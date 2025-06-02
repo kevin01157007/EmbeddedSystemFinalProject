@@ -8,3 +8,5 @@ config.py
 *.plg
 *.Bak
 *.LST
+*.lnp
+*.password
