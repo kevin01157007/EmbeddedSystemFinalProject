@@ -1,2 +1,10 @@
 
 config.py
+# Keil / C 編譯產生檔案
+*.obj
+*.hex
+*.M51
+*.Opt
+*.plg
+*.Bak
+*.LST

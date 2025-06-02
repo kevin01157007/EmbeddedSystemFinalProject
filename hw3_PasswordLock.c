@@ -44,28 +44,36 @@ void main(void) {
             uart_index = 0;
 
             if (strcmp(uart_buf, "ENTER") == 0) {
-                bit correct = 1;
-                for (i = 0; i < 4; i++)
-                    correct = correct && (input_buffer[i] == password[i]);
-
-                for (i = 0; i < 8; i++)
-                    TempData[i] = 0;
-
-                if (correct) {
-                    TempData[0] = 0x3f; // o
-                    TempData[1] = 0x73; // p
-                    TempData[2] = 0x79; // E
-                    TempData[3] = 0x54; // n
-                    SendStr("correct!");
-                } else {
-                    TempData[0] = 0x79; // E
-                    TempData[1] = 0x50; // r
-                    TempData[2] = 0x50; // r
-                    SendStr("wrong");
-                }
-
-				clear = 1;
-                input_index = 0;
+				if(set_mode) {
+					for (i = 0; i < 8; i++)
+	                	TempData[i] = 0;
+					set_mode = 0;
+					SendStr("setup_finish");
+				}
+				else {
+	                bit correct = 1;
+	                for (i = 0; i < 4; i++)
+	                    correct = correct && (input_buffer[i] == password[i]);
+	
+	                for (i = 0; i < 8; i++)
+	                    TempData[i] = 0;
+	
+	                if (correct) {
+	                    TempData[0] = 0x3f; // o
+	                    TempData[1] = 0x73; // p
+	                    TempData[2] = 0x79; // E
+	                    TempData[3] = 0x54; // n
+	                    SendStr("correct!");
+	                } else {
+	                    TempData[0] = 0x79; // E
+	                    TempData[1] = 0x50; // r
+	                    TempData[2] = 0x50; // r
+	                    SendStr("wrong");
+	                }
+	
+					clear = 1;
+	                input_index = 0;
+				}
             }
 
             else if (strcmp(uart_buf, "SET\r\r") == 0) {
@@ -91,12 +99,8 @@ void main(void) {
                     TempData[4 + input_index] = dofly_DuanMa[num];
                     input_index++;
                     if (input_index == 4) {
-                        set_mode = 0;
                         input_index = 0;
-                        DelayMs(500); // 停留一點時間再清
-                        for (i = 0; i < 8; i++)
-                            TempData[i] = 0;
-                        SendStr("setup_finish");
+
                     }
                 } else {
                     input_buffer[input_index] = num;
