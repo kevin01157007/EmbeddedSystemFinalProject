@@ -144,8 +144,8 @@ void Init_Timer0(void) {
     TR0 = 1;
 }
 void Timer0_isr(void) interrupt 1 {
-    TH0 = (65536 - 2000) / 256;
-    TL0 = (65536 - 2000) % 256;
+    TH0 = (65536 - 1000) / 256;
+    TL0 = (65536 - 1000) % 256;
     Display(0, 8);
 }
 
